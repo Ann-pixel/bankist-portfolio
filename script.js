@@ -10,9 +10,10 @@ const btnScrollTo = document.querySelector(".btn--scroll-to");
 const section1 = document.querySelector("#section--1");
 
 const navLinks = document.querySelector(".nav__links");
-
+const navBar = document.querySelector(".nav");
 const tabs = document.querySelectorAll(".operations__tab");
-const tabContainer = document.querySelector(".operations__tab--container");
+const tabContainer = document.querySelector(".operations__tab-container");
+const tabsContent = document.querySelectorAll(".operations__content");
 function openModal(evt) {
   evt.preventDefault();
   modal.classList.remove("hidden");
@@ -49,6 +50,7 @@ btnScrollTo.addEventListener("click", function (evt) {
 //   });
 // });
 //..instead use evt delegation. add clbk function to a parent element and handle the event there.
+//---smooth scroll
 navLinks.addEventListener("click", function (evt) {
   evt.preventDefault();
   if (evt.target.classList.contains("nav__link")) {
@@ -56,6 +58,51 @@ navLinks.addEventListener("click", function (evt) {
     document.querySelector(id).scrollIntoView({ behavior: "smooth" });
   }
 });
+//--operations tab
+tabContainer.addEventListener("click", function (evt) {
+  const clicked = evt.target.closest(".operations__tab");
+
+  if (!clicked) return;
+  tabs.forEach((tab) => tab.classList.remove("operations__tab--active"));
+  clicked.classList.add("operations__tab--active");
+
+  tabsContent.forEach((tab) =>
+    tab.classList.remove("operations__content--active")
+  );
+  document
+    .querySelector(`.operations__content--${clicked.dataset.tab}`)
+    .classList.add("operations__content--active");
+});
+//--nav hover function (changing opacity)
+function handleHover(evt, opacity) {
+  if (evt.target.classList.contains("nav__link")) {
+    const link = evt.target;
+    const siblings = link.closest(".nav").querySelectorAll(".nav__link");
+    const logo = link.closest(".nav").querySelector("img");
+    siblings.forEach((sib) => {
+      if (sib !== link) sib.style.opacity = opacity;
+    });
+    logo.style.opacity = opacity;
+  }
+}
+navBar.addEventListener("mouseover", (evt) => handleHover(evt, 0.5));
+navBar.addEventListener("mouseout", (evt) => handleHover(evt, 1));
+
+//----sticky navigation---
+//using scroll event is not ideal. coz scroll fires for every little scroll
+// const initialCords = section1.getBoundingClientRect();
+// window.addEventListener("scroll", function () {
+//   // console.log(window.scrollY);
+//   if (window.scrollY >= initialCords.top) {
+//     navBar.classList.add("sticky");
+//   } else {
+//     navBar.classList.remove("sticky");
+//   }
+// });
+// --Intersection Observer API
+// const observer = new IntersectionObserver();
+// observer.observe(section1);
+
 // console.log(document.documentElement);
 // console.log(document.head);
 // console.log(document.body);
